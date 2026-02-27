@@ -1,63 +1,66 @@
 #!/usr/bin/env python3
 
+
 class Plant:
-    def __init__(self, name, height, age):
+    def __init__(self, name: str, height: int, age: int) -> None:
         self.name = name
         self.height = height
         self.age = age
 
-    def get_info(self):
+    def get_info(self) -> str:
         return f"{self.height}cm, {self.age} days"
 
 
 class Flower(Plant):
-    def __init__(self, name, height, age, color):
+    def __init__(self, name: str, height: int, age: int, color: str) -> None:
         super().__init__(name, height, age)
         self.color = color
 
-    def get_info(self):
+    def get_info(self) -> str:
         base_info = super().get_info()
         return f"{self.name} (Flower): {base_info}, {self.color} color"
 
-    def bloom(self):
+    def bloom(self) -> None:
         print(f"{self.name} is blooming beautifully!")
 
 
 class Tree(Plant):
-    def __init__(self, name, height, age, trunk_diameter):
+    def __init__(self, name: str, height: int, age: int,
+                 trunk_diameter: int) -> None:
         super().__init__(name, height, age)
         self.trunk_diameter = trunk_diameter
 
-    def get_info(self):
+    def get_info(self) -> str:
         base_info = super().get_info()
         return (
             f"{self.name} (Tree): {base_info}, "
             f"{self.trunk_diameter}cm diameter"
         )
 
-    def produce_shade(self):
+    def produce_shade(self) -> None:
         shade = int(self.trunk_diameter * 1.56)
         print(f"{self.name} provides {shade} square meters of shade")
 
 
 class Vegetable(Plant):
-    def __init__(self, name, height, age, harvest_season, nutritional_value):
+    def __init__(self, name: str, height: int, age: int,
+                 harvest_season: str, nutritional_value: str) -> None:
         super().__init__(name, height, age)
         self.harvest_season = harvest_season
         self.nutritional_value = nutritional_value
 
-    def get_info(self):
+    def get_info(self) -> str:
         base_info = super().get_info()
         return (
             f"{self.name} (Vegetable): {base_info}, "
             f"{self.harvest_season} harvest"
         )
 
-    def nutri_value(self):
+    def nutri_value(self) -> None:
         print(f"{self.name} is rich in {self.nutritional_value}!")
 
 
-def ft_plant_types():
+def ft_plant_types() -> None:
     rose = Flower("Rose", 25, 30, "red")
     oak = Tree("Oak", 500, 1825, 50)
     tomato = Vegetable("Tomato", 80, 90, "summer", "vitamin C")
