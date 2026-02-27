@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
 class Plant:
-    def __init__(self, name: str, height: int, age: int):
+    def __init__(self, name: str, height: int, age: int) -> None:
         self.name = name
         self.height = height
         self.age = age
 
-    def grow(self):
+    def grow(self) -> None:
         self.height += 1
 
-    def increase_age(self):
+    def increase_age(self) -> None:
         self.age += 1
 
-    def get_info(self):
+    def get_info(self) -> None:
         return (f"{self.name}: {self.height}cm, {self.age} days old")
 
 
-def ft_plant_growth():
+def ft_plant_growth() -> None:
     plants = [
         Plant("Rose", 25, 30),
         Plant("Sunflower", 80, 45),
