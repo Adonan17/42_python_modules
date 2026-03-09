@@ -48,7 +48,7 @@ def test_error_types():
     print("Testing multiple errors together...")
     try:
         garden_operations("value")
-    except (ValueError, ZeroDivisionError) as e:
+    except (ValueError, ZeroDivisionError):
         print("Caught an error, but program continues!")
     print()
 
