@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-def check_temperature(temp_str):
+
+def check_temperature(temp_str: str) -> int | None:
     try:
         temp = int(temp_str)
         if temp < 0:
@@ -9,10 +10,13 @@ def check_temperature(temp_str):
             print(f"Error: {temp}°C is too hot for plants (max 40°C)")
         else:
             print(f"Temperature {temp}°C is perfect for plants!")
+            return temp
     except ValueError:
-        print(f"Error: {temp_str} is not a valid number")
+        print(f"Error: '{temp_str}' is not a valid number")
+    return None
 
-def test_temperature_input():
+
+def test_temperature_input() -> None:
     print("=== Garden Temperature Checker ===")
     tests = ["25", "abc", "100", "-50"]
 

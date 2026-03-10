@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 
-def garden_operations(operation: str):
+def garden_operations(operation: str) -> None:
     if operation == "value":
         int("abc")
     elif operation == "zero":
@@ -14,7 +14,7 @@ def garden_operations(operation: str):
         print(plants["missing_plant"])
 
 
-def test_error_types():
+def test_error_types() -> None:
     print("=== Garden Error Types Demo ===\n")
 
     print("Testing ValueError...")
