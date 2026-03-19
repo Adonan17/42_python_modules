@@ -4,7 +4,7 @@ print("=== Game Analytics Dashboard ===")
 
 players = ["alice", "bob", "charlie", "diana"]
 
-scores = [2300, 1700, 2150, 2000]
+scores = [2300, 1800, 2150, 2000]
 
 achievements = {
     "alice": [
