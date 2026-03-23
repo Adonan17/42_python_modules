@@ -26,10 +26,9 @@ def get_all_unique(players: dict) -> set:
 
 
 def get_common_all(players: dict) -> set:
-    sets = list(players.values())
-    common = sets[0]
-    for i in range(1, len(sets)):
-        common = common.intersection(sets[i])
+    common = set(ALL_ACHIEVEMENTS)
+    for achievements in players.values():
+        common = common.intersection(achievements)
     return common
 
 

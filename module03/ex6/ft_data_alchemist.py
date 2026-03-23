@@ -14,11 +14,7 @@ def build_score_dict(players: list) -> dict:
 
 
 def get_high_scores(scores: dict, average: float) -> dict:
-    return {
-        player: score
-        for player, score in scores.items()
-        if score > average
-    }
+    return {name: scores[name] for name in scores if scores[name] > average}
 
 
 def main() -> None:

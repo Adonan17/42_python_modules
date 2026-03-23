@@ -4,8 +4,10 @@ import sys
 
 
 def print_arguments(args: list) -> None:
-    for i in range(len(args)):
+    i = 0
+    while i < len(args):
         print(f"Argument {i + 1}: {args[i]}")
+        i += 1
 
 
 def main() -> None:

@@ -34,7 +34,7 @@ def display_thousand_events() -> None:
 def build_event_list(count: int) -> list:
     generator = gen_event()
     events = []
-    for i in range(count):
+    for _ in range(count):
         events.append(next(generator))
     return events
 
