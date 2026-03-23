@@ -1,34 +1,69 @@
 #!/usr/bin/env python3
 
-print("=== Achievement Tracker System ===")
-print()
-alice = set(["first_kill", "level_10", "treasure_hunter", "speed_demon"])
-bob = set(["first_kill", "level_10", "boss_slayer", "collector"])
-charlie = set(["level_10", "treasure_hunter", "boss_slayer",
-               "speed_demon", "perfectionist"])
-print(f"Player alice achievements: {alice}")
-print(f"Player bob achievements: {bob}")
-print(f"Player charlie achievements: {charlie}")
+import random
 
-print("\n=== Achievement Analytics ===")
 
-all_achievements = alice.union(bob).union(charlie)
-print(f"All unique achievements: {all_achievements}")
-print(f"Total unique achievements: {len(all_achievements)}")
+ALL_ACHIEVEMENTS = [
+    "Crafting Genius", "Strategist", "World Savior", "Speed Runner",
+    "Survivor", "Master Explorer", "Treasure Hunter", "Unstoppable",
+    "First Steps", "Collector Supreme", "Untouchable", "Sharp Mind",
+    "Boss Slayer", "Hidden Path Finder", "Champion", "Legend",
+]
 
-common_all = alice.intersection(bob).intersection(charlie)
-print(f"\nCommon to all players: {common_all}")
+PLAYER_NAMES = ["Alice", "Bob", "Charlie", "Dylan"]
 
-alice_only = alice.difference(bob.union(charlie))
-bob_only = bob.difference(alice.union(charlie))
-charlie_only = charlie.difference(alice.union(bob))
-rare = alice_only.union(bob_only).union(charlie_only)
-print(f"Rare achievements (1 player): {rare}")
 
-alice_bob_common = alice.intersection(bob)
-alice_unique = alice.difference(bob)
-bob_unique = bob.difference(alice)
+def gen_player_achievements() -> set:
+    count = random.randint(4, len(ALL_ACHIEVEMENTS) - 2)
+    return set(random.sample(ALL_ACHIEVEMENTS, count))
 
-print(f"\nAlice vs Bob common: {alice_bob_common}")
-print(f"Alice unique: {alice_unique}")
-print(f"Bob unique: {bob_unique}")
+
+def get_all_unique(players: dict) -> set:
+    all_achievements = set()
+    for achievements in players.values():
+        all_achievements = all_achievements.union(achievements)
+    return all_achievements
+
+
+def get_common_all(players: dict) -> set:
+    sets = list(players.values())
+    common = sets[0]
+    for i in range(1, len(sets)):
+        common = common.intersection(sets[i])
+    return common
+
+
+def get_exclusive(name: str, players: dict) -> set:
+    others = set()
+    for other_name in players:
+        if other_name != name:
+            others = others.union(players[other_name])
+    return players[name].difference(others)
+
+
+def get_missing(name: str, players: dict) -> set:
+    return set(ALL_ACHIEVEMENTS).difference(players[name])
+
+
+def main() -> None:
+    print("=== Achievement Tracker System ===\n")
+
+    players = {}
+    for name in PLAYER_NAMES:
+        players[name] = gen_player_achievements()
+        print(f"Player {name}: {players[name]}")
+
+    print(f"\nAll distinct achievements: {get_all_unique(players)}")
+    print(f"Common achievements: {get_common_all(players)}\n")
+
+    for name in PLAYER_NAMES:
+        print(f"Only {name} has: {get_exclusive(name, players)}")
+
+    print()
+
+    for name in PLAYER_NAMES:
+        print(f"{name} is missing: {get_missing(name, players)}")
+
+
+if __name__ == "__main__":
+    main()
