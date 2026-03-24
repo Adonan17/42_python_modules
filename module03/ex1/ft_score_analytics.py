@@ -7,7 +7,7 @@ def parse_scores(raw_args: list) -> list:
     scores = []
     for arg in raw_args:
         try:
-            scores.append(int(arg))
+            scores += [int(arg)]
         except ValueError:
             print(f"Invalid parameter: '{arg}'")
     return scores
