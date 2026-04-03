@@ -1,28 +1,61 @@
 #!/usr/bin/env python3
 
+import sys
+
 
 def main():
+    if len(sys.argv) != 2:
+        print("Usage: ft_archive_creation.py <file>")
+        return
+
+    filename = sys.argv[1]
+
+    print("=== Cyber Archives Recovery & Preservation ===")
+    print(f"Accessing file '{filename}'")
+
     try:
-        file = open("new_discovery.txt", "w")
-    except FileNotFoundError:
-        print("ERROR: Storage vault not found. Run data generator first.")
+        file = open(filename, "r")
+    except OSError as error:
+        print(f"Error opening file '{filename}': {error}")
+        return
+
+    print("---")
+    content = file.read()
+    lines = content.split("\n")
+    for line in lines:
+        if line != "":
+            print(line)
+    print("---")
+    file.close()
+    print(f"File '{filename}' closed.")
+
+    print()
+    print("Transform data:")
+    print("---")
+
+    transformed = []
+    for line in lines:
+        if line != "":
+            new_line = line + "#\n"
+            transformed.append(new_line)
+            print(new_line, end="")
+
+    print("---")
+
+    new_file = input("Enter new file name (or empty): ")
+
+    if new_file == "":
+        print("Not saving data.")
     else:
-        print("=== CYBER ARCHIVES - PRESERVATION SYSTEM ===")
-        print()
-        print("Initializing new storage unit: new_discovery.txt")
-        print("Storage unit created successfully...")
-        print()
-        print("Inscribing preservation data...")
-        file.write("[ENTRY 001] New quantum algorithm discovered\n")
-        file.write("[ENTRY 002] Efficiency increased by 347%\n")
-        file.write("[ENTRY 003] Archived by Data Archivist trainee\n")
-        print("[ENTRY 001] New quantum algorithm discovered")
-        print("[ENTRY 002] Efficiency increased by 347%")
-        print("[ENTRY 003] Archived by Data Archivist trainee")
-        print()
-        file.close()
-        print("Data inscription complete. Storage unit sealed.")
-        print("Archive 'new_discovery.txt' ready for long-term preservation.")
+        print(f"Saving data to '{new_file}'.")
+        try:
+            out = open(new_file, "w")
+            for line in transformed:
+                out.write(line)
+            out.close()
+            print(f"Data saved in file '{new_file}'.")
+        except OSError as error:
+            print(f"Error writing file '{new_file}': {error}")
 
 
 if __name__ == "__main__":
