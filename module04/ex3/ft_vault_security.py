@@ -23,7 +23,7 @@ def secure_archive(
         return (False, str(error))
 
 
-def main():
+def main() -> None:
     print("=== Cyber Archives Security ===")
     print()
 
