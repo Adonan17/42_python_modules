@@ -36,12 +36,14 @@ class NumericProcessor(DataProcessor):
             return all(type(x) in (int, float) for x in data)
         return False
 
-    def ingest(
+    def ingest(  # type: ignore[override]
         self, data: int | float | list[int | float]
     ) -> None:
         if not self.validate(data):
             raise ValueError("Improper numeric data")
-        items: list[int | float] = data if isinstance(data, list) else [data]
+        items: list[int | float] = (
+            data if isinstance(data, list) else [data]
+        )
         for x in items:
             self._data.append(str(x))
 
@@ -54,7 +56,7 @@ class TextProcessor(DataProcessor):
             return all(type(x) is str for x in data)
         return False
 
-    def ingest(
+    def ingest(  # type: ignore[override]
         self, data: str | list[str]
     ) -> None:
         if not self.validate(data):
@@ -69,8 +71,7 @@ class LogProcessor(DataProcessor):
         def _ok(e: Any) -> bool:
             return (
                 type(e) is dict
-                and "log_level" in e
-                and "log_message" in e
+                and "log_level" in e and "log_message" in e
                 and type(e["log_level"]) is str
                 and type(e["log_message"]) is str
             )
@@ -80,7 +81,7 @@ class LogProcessor(DataProcessor):
             return all(_ok(x) for x in data)
         return False
 
-    def ingest(
+    def ingest(  # type: ignore[override]
         self, data: dict[str, str] | list[dict[str, str]]
     ) -> None:
         if not self.validate(data):
@@ -106,7 +107,9 @@ class CSVExportPlugin:
 
 class JSONExportPlugin:
     def process_output(self, data: list[tuple[int, str]]) -> None:
-        pairs = ", ".join(f'"item_{rank}": "{value}"' for rank, value in data)
+        pairs = ", ".join(
+            f'"item_{rank}": "{value}"' for rank, value in data
+        )
         print("JSON Output:")
         print("{" + pairs + "}")
 
@@ -134,8 +137,10 @@ class DataStream:
                     handled = True
                     break
             if not handled:
-                message = "DataStream error - can't process element"
-                print(f"{message}: {element}")
+                print(
+                    "DataStream error - Can't process"
+                    f" element in stream: {element}"
+                )
 
     def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
         for proc in self._processors:
@@ -152,9 +157,7 @@ class DataStream:
             print("No processor found, no data")
             return
         for proc in self._processors:
-            name = type(proc).__name__.replace(
-                "Processor", " Processor"
-            )
+            name = type(proc).__name__.replace("Processor", " Processor")
             total = self._totals[proc]
             remaining = proc.remaining
             print(
@@ -183,20 +186,17 @@ def main() -> None:
         [
             {
                 "log_level": "WARNING",
-                "log_message": "Telnet access! Use ssh instead"
+                "log_message": "Telnet access! Use ssh instead",
             },
             {
                 "log_level": "INFO",
-                "log_message": "User wil is connected"
+                "log_message": "User wil is connected",
             },
         ],
         42,
         ["Hi", "five"],
     ]
-    print(
-        f"Send first batch of data on stream: "
-        f"{batch1}"
-    )
+    print(f"Send first batch of data on stream: {batch1}")
     pipeline.process_stream(batch1)
     pipeline.print_processors_stats()
     print()
@@ -213,20 +213,17 @@ def main() -> None:
         [
             {
                 "log_level": "ERROR",
-                "log_message": "500 server crash"
+                "log_message": "500 server crash",
             },
             {
                 "log_level": "NOTICE",
-                "log_message": "Certificate expires in 10 days"
+                "log_message": "Certificate expires in 10 days",
             },
         ],
         [32, 42, 64, 84, 128, 168],
         "World hello",
     ]
-    print(
-        f"Send another batch of data: "
-        f"{batch2}"
-    )
+    print(f"Send another batch of data: {batch2}")
     pipeline.process_stream(batch2)
     pipeline.print_processors_stats()
     print()

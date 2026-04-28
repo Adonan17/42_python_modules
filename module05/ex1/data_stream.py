@@ -36,10 +36,14 @@ class NumericProcessor(DataProcessor):
             return all(type(x) in (int, float) for x in data)
         return False
 
-    def ingest(self, data: int | float | list[int | float]) -> None:
+    def ingest(  # type: ignore[override]
+        self, data: int | float | list[int | float]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper numeric data")
-        items: list[int | float] = data if isinstance(data, list) else [data]
+        items: list[int | float] = (
+            data if isinstance(data, list) else [data]
+        )
         for x in items:
             self._data.append(str(x))
 
@@ -52,7 +56,9 @@ class TextProcessor(DataProcessor):
             return all(type(x) is str for x in data)
         return False
 
-    def ingest(self, data: str | list[str]) -> None:
+    def ingest(  # type: ignore[override]
+        self, data: str | list[str]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper text data")
         items: list[str] = data if isinstance(data, list) else [data]
@@ -75,7 +81,9 @@ class LogProcessor(DataProcessor):
             return all(_ok(x) for x in data)
         return False
 
-    def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
+    def ingest(  # type: ignore[override]
+        self, data: dict[str, str] | list[dict[str, str]]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
         items: list[dict[str, str]] = (
@@ -108,8 +116,10 @@ class DataStream:
                     handled = True
                     break
             if not handled:
-                message = "DataStream error - can't process element"
-                print(f"{message}: {element}")
+                print(
+                    "DataStream error - Can't process"
+                    f" element in stream: {element}"
+                )
 
     def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
@@ -117,9 +127,7 @@ class DataStream:
             print("No processor found, no data")
             return
         for proc in self._processors:
-            name = type(proc).__name__.replace(
-                "Processor", " Processor"
-            )
+            name = type(proc).__name__.replace("Processor", " Processor")
             total = self._totals[proc]
             remaining = proc.remaining
             print(
@@ -146,21 +154,18 @@ def main() -> None:
         [
             {
                 "log_level": "WARNING",
-                "log_message": "Telnet access! Use ssh instead"
+                "log_message": "Telnet access! Use ssh instead",
             },
             {
                 "log_level": "INFO",
-                "log_message": "User wil is connected"
+                "log_message": "User wil is connected",
             },
         ],
         42,
         ["Hi", "five"],
     ]
 
-    print(
-        f"Send first batch of data on stream: "
-        f"{batch}"
-    )
+    print(f"Send first batch of data on stream: {batch}")
     stream.process_stream(batch)
     stream.print_processors_stats()
     print()
@@ -178,8 +183,8 @@ def main() -> None:
     numeric_proc, text_proc, log_proc = processors
 
     print(
-        "Consume some elements from the data processors: "
-        "Numeric 3, Text 2, Log 1"
+        "Consume some elements from the data processors:"
+        " Numeric 3, Text 2, Log 1"
     )
     for _ in range(3):
         numeric_proc.output()
