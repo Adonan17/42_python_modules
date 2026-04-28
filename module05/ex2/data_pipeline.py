@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Protocol
 
 
 class DataProcessor(ABC):
@@ -36,7 +36,9 @@ class NumericProcessor(DataProcessor):
             return all(type(x) in (int, float) for x in data)
         return False
 
-    def ingest(self, data: int | float | list[int | float]) -> None:
+    def ingest(
+        self, data: int | float | list[int | float]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper numeric data")
         items: list[int | float] = data if isinstance(data, list) else [data]
@@ -52,7 +54,9 @@ class TextProcessor(DataProcessor):
             return all(type(x) is str for x in data)
         return False
 
-    def ingest(self, data: str | list[str]) -> None:
+    def ingest(
+        self, data: str | list[str]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper text data")
         items: list[str] = data if isinstance(data, list) else [data]
@@ -65,7 +69,8 @@ class LogProcessor(DataProcessor):
         def _ok(e: Any) -> bool:
             return (
                 type(e) is dict
-                and "log_level" in e and "log_message" in e
+                and "log_level" in e
+                and "log_message" in e
                 and type(e["log_level"]) is str
                 and type(e["log_message"]) is str
             )
@@ -75,7 +80,9 @@ class LogProcessor(DataProcessor):
             return all(_ok(x) for x in data)
         return False
 
-    def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
+    def ingest(
+        self, data: dict[str, str] | list[dict[str, str]]
+    ) -> None:
         if not self.validate(data):
             raise ValueError("Improper log data")
         items: list[dict[str, str]] = (
@@ -83,6 +90,25 @@ class LogProcessor(DataProcessor):
         )
         for x in items:
             self._data.append(f"{x['log_level']}: {x['log_message']}")
+
+
+class ExportPlugin(Protocol):
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        ...
+
+
+class CSVExportPlugin:
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        row = ",".join(value for _rank, value in data)
+        print("CSV Output:")
+        print(row)
+
+
+class JSONExportPlugin:
+    def process_output(self, data: list[tuple[int, str]]) -> None:
+        pairs = ", ".join(f'"item_{rank}": "{value}"' for rank, value in data)
+        print("JSON Output:")
+        print("{" + pairs + "}")
 
 
 class DataStream:
@@ -111,6 +137,15 @@ class DataStream:
                 message = "DataStream error - can't process element"
                 print(f"{message}: {element}")
 
+    def output_pipeline(self, nb: int, plugin: ExportPlugin) -> None:
+        for proc in self._processors:
+            batch: list[tuple[int, str]] = []
+            for _ in range(nb):
+                if proc.remaining > 0:
+                    batch.append(proc.output())
+            if batch:
+                plugin.process_output(batch)
+
     def print_processors_stats(self) -> None:
         print("== DataStream statistics ==")
         if not self._processors:
@@ -129,18 +164,20 @@ class DataStream:
 
 
 def main() -> None:
-    print("=== Code Nexus - Data Stream ===\n")
+    print("=== Code Nexus - Data Pipeline ===\n")
 
-    stream = DataStream()
+    pipeline = DataStream()
 
     print("Initialize Data Stream...")
-    stream.print_processors_stats()
+    pipeline.print_processors_stats()
     print()
 
-    print("Registering Numeric Processor")
-    stream.register_processor(NumericProcessor())
+    print("Registering Processors")
+    pipeline.register_processor(NumericProcessor())
+    pipeline.register_processor(TextProcessor())
+    pipeline.register_processor(LogProcessor())
 
-    batch: list[Any] = [
+    batch1: list[Any] = [
         "Hello world",
         [3.14, -1, 2.71],
         [
@@ -156,38 +193,48 @@ def main() -> None:
         42,
         ["Hi", "five"],
     ]
-
     print(
         f"Send first batch of data on stream: "
-        f"{batch}"
+        f"{batch1}"
     )
-    stream.process_stream(batch)
-    stream.print_processors_stats()
+    pipeline.process_stream(batch1)
+    pipeline.print_processors_stats()
     print()
 
-    print("Registering other data processors")
-    stream.register_processor(TextProcessor())
-    stream.register_processor(LogProcessor())
-
-    print("Send the same batch again")
-    stream.process_stream(batch)
-    stream.print_processors_stats()
+    csv_plugin = CSVExportPlugin()
+    print("Send 3 processed data from each processor to a CSV plugin:")
+    pipeline.output_pipeline(3, csv_plugin)
+    pipeline.print_processors_stats()
     print()
 
-    processors = stream._processors
-    numeric_proc, text_proc, log_proc = processors
-
+    batch2: list[Any] = [
+        21,
+        ["I love AI", "LLMs are wonderful", "Stay healthy"],
+        [
+            {
+                "log_level": "ERROR",
+                "log_message": "500 server crash"
+            },
+            {
+                "log_level": "NOTICE",
+                "log_message": "Certificate expires in 10 days"
+            },
+        ],
+        [32, 42, 64, 84, 128, 168],
+        "World hello",
+    ]
     print(
-        "Consume some elements from the data processors: "
-        "Numeric 3, Text 2, Log 1"
+        f"Send another batch of data: "
+        f"{batch2}"
     )
-    for _ in range(3):
-        numeric_proc.output()
-    for _ in range(2):
-        text_proc.output()
-    log_proc.output()
+    pipeline.process_stream(batch2)
+    pipeline.print_processors_stats()
+    print()
 
-    stream.print_processors_stats()
+    json_plugin = JSONExportPlugin()
+    print("Send 5 processed data from each processor to a JSON plugin:")
+    pipeline.output_pipeline(5, json_plugin)
+    pipeline.print_processors_stats()
 
 
 if __name__ == "__main__":
