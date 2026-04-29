@@ -36,7 +36,7 @@ class NumericProcessor(DataProcessor):
             return all(type(x) in (int, float) for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: int | float | list[int | float]
     ) -> None:
         if not self.validate(data):
@@ -56,7 +56,7 @@ class TextProcessor(DataProcessor):
             return all(type(x) is str for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: str | list[str]
     ) -> None:
         if not self.validate(data):
@@ -71,7 +71,8 @@ class LogProcessor(DataProcessor):
         def _ok(e: Any) -> bool:
             return (
                 type(e) is dict
-                and "log_level" in e and "log_message" in e
+                and "log_level" in e
+                and "log_message" in e
                 and type(e["log_level"]) is str
                 and type(e["log_message"]) is str
             )
@@ -81,7 +82,7 @@ class LogProcessor(DataProcessor):
             return all(_ok(x) for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: dict[str, str] | list[dict[str, str]]
     ) -> None:
         if not self.validate(data):

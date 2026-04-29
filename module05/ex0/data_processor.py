@@ -36,7 +36,7 @@ class NumericProcessor(DataProcessor):
             return all(type(x) in (int, float) for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: int | float | list[int | float]
     ) -> None:
         if not self.validate(data):
@@ -56,7 +56,7 @@ class TextProcessor(DataProcessor):
             return all(type(x) is str for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: str | list[str]
     ) -> None:
         if not self.validate(data):
@@ -81,7 +81,7 @@ class LogProcessor(DataProcessor):
             return all(_ok(x) for x in data)
         return False
 
-    def ingest(  # type: ignore[override]
+    def ingest(
         self, data: dict[str, str] | list[dict[str, str]]
     ) -> None:
         if not self.validate(data):
@@ -102,7 +102,7 @@ def main() -> None:
     print(f" Trying to validate input 'Hello': {numeric.validate('Hello')}")
     print(" Test invalid ingestion of string 'foo' without prior validation:")
     try:
-        numeric.ingest("foo")  # type: ignore[arg-type]
+        numeric.ingest("foo")
     except ValueError as e:
         print(f" Got exception: {e}")
     print(" Processing data: [1, 2, 3, 4, 5]")
